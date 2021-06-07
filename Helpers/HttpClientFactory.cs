@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ANTapPayment.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -12,44 +13,60 @@ namespace ANTapPayment.Helpers
     {
 
         private readonly HttpClient _httpClient;
-        private const string baseUri = "https://api.tap.company/v2/";
-        public HttpClientFactory(string authToken)
+        private const string baseUri = "https://api.tap.company/";
+        public HttpClientFactory(string authToken, string ApiVersion = "v2")
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri(baseUri) };
+            _httpClient = new HttpClient { BaseAddress = new Uri($"{baseUri}/{ApiVersion}") };
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
 
 
-        public async Task<T> GetAsync<T>(string endpoint, string args = null)
+        public async Task<GenericResponse<T, U>> GetAsync<T, U>(string endpoint, string args = null, string Lang = "EN")
         {
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("lang_code", Lang);
+
             var response = await _httpClient.GetAsync($"{endpoint}?{args}");
-            if (!response.IsSuccessStatusCode)
-                return default(T);
-            var result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(result);
+            var result = new GenericResponse<T, U>();
+            result.IsSuccess = response.IsSuccessStatusCode;
+            var JsonResponse = await response.Content.ReadAsStringAsync();
+            if (result.IsSuccess)
+                result.SucsessResponse = JsonConvert.DeserializeObject<T>(JsonResponse);
+            else
+                result.FailureResponse = JsonConvert.DeserializeObject<U>(JsonResponse);
+            return result;
         }
 
-        public async Task<T> PostFormAsync<T>(string endpoint, FormUrlEncodedContent formContent)
+        public async Task<GenericResponse<T, U>> PostFormAsync<T, U>(string endpoint, FormUrlEncodedContent formContent, string Lang = "EN")
         {
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("lang_code", Lang);
             var response = await _httpClient.PostAsync($"{endpoint}", formContent);
-            if (!response.IsSuccessStatusCode)
-                return default(T);
-
-            var result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(result);
+            var result = new GenericResponse<T, U>();
+            result.IsSuccess = response.IsSuccessStatusCode;
+            var JsonResponse = await response.Content.ReadAsStringAsync();
+            if (result.IsSuccess)
+                result.SucsessResponse = JsonConvert.DeserializeObject<T>(JsonResponse);
+            else
+                result.FailureResponse = JsonConvert.DeserializeObject<U>(JsonResponse);
+            return result;
         }
 
 
-        public async Task<T> PostAsync<T>(string endpoint, dynamic jObject)
+        public async Task<GenericResponse<T, U>> PostAsync<T, U>(string endpoint, dynamic jObject, string Lang = "EN")
         {
-            var stringContent = new StringContent(jObject.ToString());
-            var response = await _httpClient.PostAsync($"{endpoint}", stringContent);
-            if (!response.IsSuccessStatusCode)
-                return default(T);
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("lang_code", Lang);
+            string json = JsonConvert.SerializeObject(jObject);
+            StringContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{endpoint}", httpContent);
+            var result = new GenericResponse<T, U>();
+            result.IsSuccess = response.IsSuccessStatusCode;
+            var JsonResponse = await response.Content.ReadAsStringAsync();
+            if (result.IsSuccess)
+                result.SucsessResponse = JsonConvert.DeserializeObject<T>(JsonResponse);
+            else
+                result.FailureResponse = JsonConvert.DeserializeObject<U>(JsonResponse);
 
-            var result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(result);
+            return result;
         }
 
     }
