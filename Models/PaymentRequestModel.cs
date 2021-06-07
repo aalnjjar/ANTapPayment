@@ -80,14 +80,19 @@ namespace ANTapPayment.Models
         public string CustomerPhoneNumber { get; set; }
         /// <summary>
         /// payment source  
-        /// credit card ==> send generated token 
-        /// KNET ==> src_kw.knet 
-        /// Mada ==> src_sa.mada
-        /// Benifit ==> src_bh.benefit
-        /// Fawray ==> src_eg.fawry
-        /// Oman net ==> src_om.omannet
+        /// For credit card ==> send generated token 
+        /// For KNET ==> src_kw.knet 
+        /// For Mada ==> src_sa.mada
+        /// For Benifit ==> src_bh.benefit
+        /// For Fawray ==> src_eg.fawry
+        /// For Oman net ==> src_om.omannet
         /// </summary>
         public string PaymentSource { get; set; }
+
+        /// <summary>
+        /// based on the language code, it will show the payment page. Possible values : EN / AR. 
+        /// </summary>
+        public string Language { get; set; }
 
 
     }

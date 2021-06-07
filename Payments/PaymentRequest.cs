@@ -19,39 +19,40 @@ namespace ANTapPayment.Payments
         }
 
 
-        public async Task<ChargeReponse> Create(PaymentRequestModel requestModel)
+        public async Task<GenericResponse<ChargeReponse, TapErrorResponse>> Create(PaymentRequestModel requestModel)
         {
             try
             {
                 var reuest = GenerateRequest(requestModel);
-                var apiResponse = await _httpClientFactory.PostAsync<TapApiChargeReponse>("charges", reuest);
-                var chargeresponse = new ChargeReponse(apiResponse);
-                return chargeresponse;
+                var apiResponse = await _httpClientFactory.PostAsync<TapApiChargeReponse, TapErrorResponse>("charges", reuest, requestModel.Language);
+                var chargeresponse = apiResponse.IsSuccess ? new ChargeReponse(apiResponse.SucsessResponse) : null;
+                return new GenericResponse<ChargeReponse, TapErrorResponse>(apiResponse.JsonResponse, chargeresponse, apiResponse.FailureResponse);
             }
-            catch
+            catch (Exception ex)
             {
 
-                throw new Exception("Error creating payment request");
+                throw ex;
             }
         }
 
 
-        public async Task<ChargeReponse> GetCharge(string chargeId)
+        public async Task<GenericResponse<ChargeReponse, TapErrorResponse>> GetCharge(string chargeId)
         {
             try
             {
-                var apiResponse = await _httpClientFactory.GetAsync<TapApiChargeReponse>($"charges/{chargeId}");
-                var chargeresponse = new ChargeReponse(apiResponse);
-                return chargeresponse;
+                var apiResponse = await _httpClientFactory.GetAsync<TapApiChargeReponse, TapErrorResponse>($"charges/{chargeId}");
+                var chargeresponse = apiResponse.IsSuccess ? new ChargeReponse(apiResponse.SucsessResponse) : null;
+                return new GenericResponse<ChargeReponse, TapErrorResponse>(apiResponse.JsonResponse, chargeresponse, apiResponse.FailureResponse);
+
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception("Error geting payment request");
+                throw ex;
             }
         }
 
 
-        public async Task<TapApiChargesListResponse> GetChargeList(DateTime fromDate, DateTime toDate, int limit = 25,
+        public async Task<GenericResponse<TapApiChargesListResponse, TapErrorResponse>> GetChargeList(DateTime fromDate, DateTime toDate, int limit = 25,
            string startingAfter = "", TapChargeStatus? status = null, List<string> sources = null, List<string> customers = null,
            List<string> chargesIds = null, List<string> PaymentMethods = null, ChargeDateType chargeDateType = ChargeDateType.Transaction_Date)
         {
@@ -77,12 +78,12 @@ namespace ANTapPayment.Payments
                     payment_methods = PaymentMethods
                 };
 
-                var apiResponse = await _httpClientFactory.PostAsync<TapApiChargesListResponse>($"charges/list", requestBody);
+                var apiResponse = await _httpClientFactory.PostAsync<TapApiChargesListResponse, TapErrorResponse>($"charges/list", requestBody);
                 return apiResponse;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception("Error geting payment request");
+                throw ex;
             }
         }
 
@@ -93,14 +94,15 @@ namespace ANTapPayment.Payments
             return new
             {
                 amount = requestModel.AmountToPay,
+                currency = requestModel.CurrencyISO,
+                save_card = requestModel.SaveCardInformation,
+                threeDSecure = true,
+                description = requestModel.PaymentDescription,
+                statement_descriptor = _apiConfiguration.Company,
                 merchant = new
                 {
                     id = requestModel.PaymentMerchent
                 },
-                currency = requestModel.CurrencyISO,
-                save_card = requestModel.SaveCardInformation,
-                description = requestModel.PaymentDescription,
-                statement_descriptor = _apiConfiguration.Company,
                 reference = new
                 {
                     transaction = requestModel.TransactionId,

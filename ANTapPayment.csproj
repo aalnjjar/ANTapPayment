@@ -10,9 +10,10 @@
     <Description>this is a warper for Tap Payment</Description>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>lic.txt</PackageLicenseFile>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
+    <Version>1.0.2</Version>
+    <PackageReleaseNotes>adding extra layer to check api responses</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

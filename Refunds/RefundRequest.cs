@@ -20,14 +20,15 @@ namespace ANTapPayment.Refunds
         }
 
 
-        public async Task<RefundResponse> Create(RefundRequestModel requestModel)
+        public async Task<GenericResponse<RefundResponse, TapErrorResponse>> Create(RefundRequestModel requestModel)
         {
             try
             {
                 var reuest = GenerateRefundRequest(requestModel);
-                var apiResponse = await _httpClientFactory.PostAsync<TapApiRefundResponse>("refunds", reuest);
-                var refundResponse = new RefundResponse(apiResponse);
-                return refundResponse;
+                var apiResponse = await _httpClientFactory.PostAsync<TapApiRefundResponse, TapErrorResponse>("refunds", reuest);
+                var chargeresponse = apiResponse.IsSuccess ? new RefundResponse(apiResponse.SucsessResponse) : null;
+                return new GenericResponse<RefundResponse, TapErrorResponse>(apiResponse.JsonResponse, chargeresponse, apiResponse.FailureResponse);
+
             }
             catch
             {
@@ -37,13 +38,13 @@ namespace ANTapPayment.Refunds
         }
 
 
-        public async Task<RefundResponse> GetRefund(string refundId)
+        public async Task<GenericResponse<RefundResponse, TapErrorResponse>> GetRefund(string refundId)
         {
             try
             {
-                var apiResponse = await _httpClientFactory.GetAsync<TapApiRefundResponse>($"refunds/{refundId}");
-                var refundResponse = new RefundResponse(apiResponse);
-                return refundResponse;
+                var apiResponse = await _httpClientFactory.GetAsync<TapApiRefundResponse, TapErrorResponse>($"refunds/{refundId}");
+                var chargeresponse = apiResponse.IsSuccess ? new RefundResponse(apiResponse.SucsessResponse) : null;
+                return new GenericResponse<RefundResponse, TapErrorResponse>(apiResponse.JsonResponse, chargeresponse, apiResponse.FailureResponse);
             }
             catch
             {
@@ -52,7 +53,7 @@ namespace ANTapPayment.Refunds
         }
 
 
-        public async Task<TapApiRefundsListResponse> GetChargeList(DateTime fromDate, DateTime toDate, int limit = 25,
+        public async Task<GenericResponse<TapApiRefundsListResponse, TapErrorResponse>> GetChargeList(DateTime fromDate, DateTime toDate, int limit = 25,
         string startingAfter = "", List<string> chargesIds = null, List<string> refundsIds = null)
         {
             try
@@ -73,7 +74,7 @@ namespace ANTapPayment.Refunds
                     refunds = refundsIds
                 };
 
-                var apiResponse = await _httpClientFactory.PostAsync<TapApiRefundsListResponse>($"refunds/list", requestBody);
+                var apiResponse = await _httpClientFactory.PostAsync<TapApiRefundsListResponse, TapErrorResponse>($"refunds/list", requestBody);
                 return apiResponse;
             }
             catch
