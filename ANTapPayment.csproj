@@ -7,13 +7,14 @@
     <Copyright>@ahmed alnjjar</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>this is a warper for Tap Payment</Description>
+    <Description>this is a warper for Tap Payment (middle east)
+https://www.tap.company/</Description>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>lic.txt</PackageLicenseFile>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
-    <Version>1.0.2</Version>
-    <PackageReleaseNotes>adding extra layer to check api responses</PackageReleaseNotes>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+    <Version>1.0.3</Version>
+    <PackageReleaseNotes>fix some bugs</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
