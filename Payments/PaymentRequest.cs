@@ -115,7 +115,7 @@ namespace ANTapPayment.Payments
                 },
                 customer = new
                 {
-                    id = requestModel.CustomerId,
+                    id = requestModel.CustomerId.IsEmpty()? "":requestModel.CustomerId,
                     first_name = requestModel.CustomerFirstName,
                     middle_name = requestModel.CustomerMiddleName,
                     last_name = requestModel.CustomerLastName,

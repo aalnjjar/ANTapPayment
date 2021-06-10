@@ -13,7 +13,7 @@ namespace ANTapPayment.Models
         }
         public GenericResponse(string jsonResponse, T sucsessResponse, U failureResponse)
         {
-            IsSuccess = true;
+            IsSuccess = failureResponse == null;
             JsonResponse = jsonResponse;
             SucsessResponse = sucsessResponse;
             FailureResponse = failureResponse;

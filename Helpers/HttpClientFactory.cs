@@ -16,7 +16,7 @@ namespace ANTapPayment.Helpers
         private const string baseUri = "https://api.tap.company/";
         public HttpClientFactory(string authToken, string ApiVersion = "v2")
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri($"{baseUri}/{ApiVersion}") };
+            _httpClient = new HttpClient { BaseAddress = new Uri($"{baseUri}{ApiVersion}/") };
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
