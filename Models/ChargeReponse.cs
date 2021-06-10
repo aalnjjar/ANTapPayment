@@ -9,6 +9,11 @@ namespace ANTapPayment.Models
 
     public partial class ChargeReponse
     {
+        public ChargeReponse()
+        {
+
+        }
+
         public ChargeReponse(TapApiChargeReponse response)
         {
             Status = response.Status.StringToEnum<TapChargeStatus>();
@@ -19,6 +24,7 @@ namespace ANTapPayment.Models
             Code = response.Response != null ? response.Response.Code.ToString() : "";
             Response = response;
             CustomerId = response.Customer != null ? response.Customer.Id : "";
+            ChargeId = response.Id;
         }
 
         public TapChargeStatus Status { get; set; }
